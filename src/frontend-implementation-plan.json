@@ -1,0 +1,126 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Remove presets, add Internet Identity controls, and implement saved templates + last-scenario restore (frontend)",
+  "requirements": [
+    {
+      "id": "REQ-13",
+      "summary": "Remove the Quick Presets UI and all built-in preset usage from the Scenario Builder.",
+      "acceptanceCriteria": [
+        "The Scenario Builder sidebar no longer renders the Quick Presets card/tabs/buttons.",
+        "No user-facing text references selecting a preset to begin.",
+        "The built-in preset lists are no longer imported/used by the UI."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/scenario/ScenarioBuilder.tsx",
+          "operation": "modify",
+          "description": "Remove PresetsPanel from the sidebar and eliminate any references to presets (including the empty-state helper text that mentions selecting a preset)."
+        },
+        {
+          "path": "frontend/src/components/scenario/PresetsPanel.tsx",
+          "operation": "delete",
+          "description": "Delete the Quick Presets panel component so it can no longer be rendered."
+        },
+        {
+          "path": "frontend/src/presets/builtInPresets.ts",
+          "operation": "delete",
+          "description": "Remove built-in preset data so it is no longer imported or used by the UI."
+        }
+      ]
+    },
+    {
+      "id": "REQ-14",
+      "summary": "Add always-visible Internet Identity login/logout controls and signed-in indicator to the UI.",
+      "acceptanceCriteria": [
+        "The header (or other always-visible top-level UI area) provides a “Log in” action when anonymous and a “Log out” action when authenticated.",
+        "When authenticated, the UI shows that the user is signed in (e.g., by showing their principal in a short/truncated form).",
+        "Logging in uses the existing Internet Identity provider already wired into the app (no third-party auth providers).",
+        "Logging out clears the identity and the UI updates accordingly."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/auth/AuthControls.tsx",
+          "operation": "create",
+          "description": "Create a header auth control that uses the existing useInternetIdentity hook for login/logout, shows a truncated principal when authenticated, and clears React Query cache on logout. Use shadcn-ui Button (and any other ui primitives as needed) for consistent styling. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Wire AuthControls into the always-visible header area so the user can log in/out from anywhere in the app."
+        }
+      ]
+    },
+    {
+      "id": "REQ-16",
+      "summary": "Replace presets with a Saved Templates panel that lets authenticated users save/load/delete scenario templates using React Query + existing actor/auth hooks.",
+      "acceptanceCriteria": [
+        "The Scenario Builder sidebar contains a new panel for saved templates (and does not contain the removed presets panel).",
+        "When not logged in, the saved-templates panel indicates login is required and disables save/load actions.",
+        "When logged in, a user can enter a template name and save the current scenario; the new template appears in the list without a full page reload.",
+        "A user can click a template to load it; the Scenario Builder updates to match the template’s attackers/defenders/priority.",
+        "A user can delete a template; it disappears from the list and is removed in the backend.",
+        "Frontend uses the existing actor/auth hooks to call the backend and uses React Query patterns for fetch/mutation and cache refresh."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/utils/scenarioPersistence.ts",
+          "operation": "create",
+          "description": "Add helpers to serialize/deserialize the current CombatScenario to the backend Scenario shape from frontend/src/backend.d.ts (e.g., encode full attacker/defender objects into strings and decode them back), including priority mapping."
+        },
+        {
+          "path": "frontend/src/hooks/useSavedTemplates.ts",
+          "operation": "create",
+          "description": "Create React Query hooks (query + mutations) that use useActor to call template capabilities (getCallerTemplates, saveTemplate, getTemplate, deleteTemplate), and refresh caches after mutations. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/scenario/SavedTemplatesPanel.tsx",
+          "operation": "create",
+          "description": "Implement a sidebar panel UI to: (1) show login-required state when anonymous, (2) accept a template name, (3) save current scenario, (4) list templates, (5) load template into the builder, and (6) delete templates. Use shadcn-ui components (Card, Button, Input, ScrollArea, etc.) for layout and interactions. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/scenario/ScenarioBuilder.tsx",
+          "operation": "modify",
+          "description": "Replace the removed PresetsPanel with SavedTemplatesPanel in the sidebar. Extend ScenarioBuilder props as needed to pass the current scenario and a callback to apply a loaded scenario."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Plumb scenario data and a scenario-replace callback into ScenarioBuilder so SavedTemplatesPanel can save the current scenario and load a selected template into state."
+        },
+        {
+          "path": "frontend/src/state/useScenarioState.ts",
+          "operation": "modify",
+          "description": "Add a public method (e.g., replaceScenario) to atomically set the full scenario (attackers/defenders/priority) when loading a saved template."
+        }
+      ]
+    },
+    {
+      "id": "REQ-17",
+      "summary": "Persist and restore the authenticated user’s last in-progress scenario via backend calls, with debounced autosave and restore-on-load.",
+      "acceptanceCriteria": [
+        "When authenticated, changes to the scenario are saved to the backend (either explicitly via a “Save” control or automatically with a reasonable debounce) as the user’s last scenario.",
+        "On app startup (authenticated), the app loads the saved last scenario (if present) and populates the Scenario Builder.",
+        "If no saved last scenario exists for the user, the app behaves as it does today (empty/new scenario).",
+        "Anonymous users are not written to shared backend state."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useCurrentScenarioPersistence.ts",
+          "operation": "create",
+          "description": "Add React Query hooks for loading/saving the caller’s current scenario (getCurrentScenario, saveCurrentScenario) via useActor, including proper enabled conditions based on actor availability and authentication state. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hooks/useDebouncedValue.ts",
+          "operation": "create",
+          "description": "Add a small utility hook to debounce scenario changes before triggering autosave, to avoid excessive backend calls."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "On authenticated app load, query for the saved last scenario and, if present, restore it into useScenarioState via replaceScenario using the same serialization helpers as templates. Also set up debounced autosave that calls saveCurrentScenario whenever the scenario changes while authenticated (and does nothing when anonymous)."
+        }
+      ]
+    }
+  ]
+}

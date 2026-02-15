@@ -1,0 +1,212 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 5,
+  "summary": "Web-based Warhammer 40k/AoS combat calculator with a React+TypeScript UI for building scenarios and viewing detailed results (including optional Monte Carlo simulation), now shifting away from built-in quick presets toward user login + persistent saving of reusable attacker/defender combo templates.",
+  "architectural_notes": [
+    "Frontend: React + TypeScript; state management via Zustand or Redux; forms via React Hook Form + Zod; charts via Recharts or Chart.js; styling via Tailwind CSS.",
+    "Core domain models: Weapon, AttackerUnit, DefenderModel, CombatScenario; combat engine separates hit/wound/save/damage phases from UI.",
+    "Planned dual approach: closed-form expected value calculations plus optional Monte Carlo simulation for complex scenarios.",
+    "Shift away from built-in quick presets; prioritize user-defined saved templates/combos for attackers/defenders.",
+    "Add authentication + persistent storage layer (e.g., user accounts and backend/hosted DB) to retain scenarios/templates across sessions."
+  ],
+  "known_issues": [],
+  "isFixRequest": false,
+  "existing_features": [
+    {
+      "id": "feature-implement-typescript-data-models-for-weapon-attackerunit-defendermodel-and-combatscenario-including-optional-special-rules-fields-and-use-them-consistently-across-the-app-for-scenario-editing-calculation-and-results-rendering",
+      "title": "Implement TypeScript data models for Weapon, AttackerUnit, DefenderModel, and CombatScenario (including optional special rules fields) and use them consistently across the app for scenario editing, calculation, and results rendering.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-deterministic-expected-damage-calculation-engine-that-follows-the-user-provided-phases-hit-probability-including-rerolls-wound-roll-wound-probability-including-rerolls-failed-save-probability-including-ap-invulnerable-save-and-cover-average-damage-parsing-for-dice-notation-and-feel-no-pain-mitigation",
+      "title": "Create a deterministic expected-damage calculation engine that follows the user-provided phases: hit probability (including rerolls), wound roll + wound probability (including rerolls), failed save probability (including AP, invulnerable save, and cover), average damage parsing for dice notation, and Feel No Pain mitigation.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-support-in-the-calculation-engine-for-advanced-weapon-special-rules-fields-listed-in-the-spec-sustained-hits-extra-hits-on-6s-lethal-hits-and-devastating-wounds-with-user-configurable-toggles-values-per-weapon-in-the-ui",
+      "title": "Add support in the calculation engine for advanced weapon special rules fields listed in the spec: sustained hits (extra hits on 6s), lethal hits, and devastating wounds, with user-configurable toggles/values per weapon in the UI.",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-multi-attacker-multi-defender-expected-damage-resolution-that-aggregates-totals-and-also-produces-a-detailed-per-attacker-unit-weapon-defender-breakdown-suitable-for-rendering-as-a-table",
+      "title": "Implement multi-attacker, multi-defender expected damage resolution that aggregates totals and also produces a detailed per-(attacker unit, weapon, defender) breakdown suitable for rendering as a table.",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-compute-and-display-expected-kills-per-defender-profile-including-modelskilled-capped-by-defender-modelcount-and-an-overkill-metric-based-on-expected-damage-vs-wounds-per-model-as-described-in-the-spec",
+      "title": "Compute and display expected kills per defender profile, including modelsKilled capped by defender modelCount and an overkill metric based on expected damage vs wounds per model, as described in the spec.",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-build-the-scenario-builder-ui-to-create-and-edit-combat-scenarios-attacker-units-multiple-each-with-multiple-weapons-and-defender-profiles-multiple-include-controls-for-modelcount-and-all-core-stats-in-the-provided-models-plus-special-rules-rerolls-cover-feel-no-pain-invuln-save",
+      "title": "Build the Scenario Builder UI to create and edit combat scenarios: attacker units (multiple), each with multiple weapons, and defender profiles (multiple). Include controls for modelCount and all core stats in the provided models, plus special rules (rerolls, cover, feel no pain, invuln save).",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-optional-quick-presets-for-common-units-weapons-that-can-populate-the-scenario-builder-with-sample-attacker-units-and-defender-profiles-without-requiring-any-external-data-source",
+      "title": "Add optional quick presets for common units/weapons that can populate the Scenario Builder with sample attacker units and defender profiles, without requiring any external data source.",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-results-display-ui-with-1-a-summary-card-total-expected-damage-and-total-expected-kills-2-a-detailed-breakdown-table-3-a-damage-distribution-visualization-chart-and-4-an-export-option-for-results",
+      "title": "Create a Results Display UI with: (1) a summary card (total expected damage and total expected kills), (2) a detailed breakdown table, (3) a damage distribution visualization chart, and (4) an export option for results.",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-target-priority-modes-for-allocating-ordering-defenders-at-minimum-focus-fire-spread-and-weakest-first-and-expose-the-mode-in-the-ui-the-chosen-mode-must-affect-how-results-are-computed-and-presented-even-if-implemented-initially-as-ordering-selection-logic-before-full-sequential-wound-allocation",
+      "title": "Implement target priority modes for allocating/ordering defenders at minimum: focus_fire, spread, and weakest_first, and expose the mode in the UI. The chosen mode must affect how results are computed and presented (even if implemented initially as ordering/selection logic before full sequential wound allocation).",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-simulation-mode-monte-carlo-that-can-run-a-user-selected-number-of-iterations-for-a-scenario-and-display-distribution-outputs-including-mean-median-95th-percentile-and-a-histogram-visualization-provide-a-control-to-switch-between-deterministic-expected-value-mode-and-simulation-mode",
+      "title": "Add a simulation mode (Monte Carlo) that can run a user-selected number of iterations for a scenario and display distribution outputs including mean, median, 95th percentile, and a histogram visualization. Provide a control to switch between deterministic expected-value mode and simulation mode.",
+      "reqIds": [
+        "REQ-10"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-compute-and-display-a-chance-to-kill-metric-for-a-selected-defender-profile-using-a-binomial-distribution-based-approach-or-equivalent-discrete-distribution-and-show-it-as-a-percentage-in-the-results-display",
+      "title": "Compute and display a 'chance to kill' metric for a selected defender profile using a binomial-distribution-based approach (or equivalent discrete distribution), and show it as a percentage in the Results Display.",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-establish-a-cohesive-warhammer-themed-but-non-infringing-visual-design-system-colors-typography-spacing-card-table-styles-and-apply-it-consistently-across-scenario-builder-and-results-display-avoid-default-blue-purple-aesthetics-unless-necessary-for-contrast",
+      "title": "Establish a cohesive, Warhammer-themed but non-infringing visual design system (colors, typography, spacing, card/table styles) and apply it consistently across Scenario Builder and Results Display. Avoid default 'blue/purple' aesthetics unless necessary for contrast.",
+      "reqIds": [
+        "REQ-12"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-remove-the-existing-quick-presets-feature-from-the-scenario-builder-ui-including-the-sidebar-panel-so-users-can-no-longer-add-built-in-attacker-defender-presets",
+      "title": "Remove the existing “Quick Presets” feature from the Scenario Builder UI (including the sidebar panel) so users can no longer add built-in attacker/defender presets.",
+      "reqIds": [
+        "REQ-13"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-internet-identity-authentication-controls-to-the-app-ui-so-a-user-can-log-in-and-log-out-and-the-logged-in-state-is-clearly-indicated",
+      "title": "Add Internet Identity authentication controls to the app UI so a user can log in and log out, and the logged-in state is clearly indicated.",
+      "reqIds": [
+        "REQ-14"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-saved-templates-ui-replacing-presets-that-lets-a-logged-in-user-save-the-current-scenario-as-a-named-template-browse-their-saved-templates-load-a-template-into-the-scenario-builder-and-delete-templates",
+      "title": "Add a “Saved Templates” UI (replacing presets) that lets a logged-in user save the current scenario as a named template, browse their saved templates, load a template into the Scenario Builder, and delete templates.",
+      "reqIds": [
+        "REQ-16"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-persist-the-user-s-most-recent-in-progress-scenario-in-the-backend-and-automatically-restore-it-on-app-load-for-authenticated-users-so-their-work-is-not-lost-between-sessions",
+      "title": "Persist the user’s most recent in-progress scenario in the backend and automatically restore it on app load for authenticated users, so their work is not lost between sessions.",
+      "reqIds": [
+        "REQ-17"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Build MVP expected-damage calculator for single attacker/single weapon vs single defender (shooting), using probability-based hit/wound/save/damage steps",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Scenario Builder UI to add/edit attacker units (model count, multiple weapons) and defender profiles (toughness, saves, wounds, special rules)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Support multiple weapons per unit and aggregate total expected damage output",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Complex combat resolution for multiple attackers and multiple defender types with per-attacker/per-defender damage breakdown and expected kills/overkill",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Implement advanced rules toggles: rerolls (hits/wounds), Feel No Pain, cover, lethal hits, devastating wounds, sustained hits",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Add target priority modes (focus fire/spread/weakest first) and simulation mode (Monte Carlo) including chance-to-kill and distributions",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Results display with summary card, detailed breakdown table, visualization chart, and export capability",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "Add ability to save and reuse named combinations/templates of attacker setups and defender profiles (load/save within Scenario Builder)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-9",
+      "summary": "Add user login/accounts so scenarios/templates are persisted and not lost between sessions (cloud-backed persistence)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-12",
+      "summary": "Implement backend persistence for user-owned saved templates that capture “combos of attacks and types of defenders” by storing the full current scenario (attackers, defenders, and priority) under the authenticated user.",
+      "reqIds": [
+        "REQ-15"
+      ],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "Warhammer Combat Calculator",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

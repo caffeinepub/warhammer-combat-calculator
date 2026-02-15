@@ -1,0 +1,91 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-remove-the-existing-quick-presets-feature-from-the-scenario-builder-ui-including-the-sidebar-panel-so-users-can-no-longer-add-built-in-attacker-defender-presets",
+      "featureTitle": "Remove the existing “Quick Presets” feature from the Scenario Builder UI (including the sidebar panel) so users can no longer add built-in attacker/defender presets.",
+      "files": [
+        "frontend/src/components/scenario/PresetsPanel.tsx",
+        "frontend/src/components/scenario/ScenarioBuilder.tsx",
+        "frontend/src/presets/builtInPresets.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-13"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-internet-identity-authentication-controls-to-the-app-ui-so-a-user-can-log-in-and-log-out-and-the-logged-in-state-is-clearly-indicated",
+      "featureTitle": "Add Internet Identity authentication controls to the app UI so a user can log in and log out, and the logged-in state is clearly indicated.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/auth/AuthControls.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-14"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-a-saved-templates-ui-replacing-presets-that-lets-a-logged-in-user-save-the-current-scenario-as-a-named-template-browse-their-saved-templates-load-a-template-into-the-scenario-builder-and-delete-templates",
+      "featureTitle": "Add a “Saved Templates” UI (replacing presets) that lets a logged-in user save the current scenario as a named template, browse their saved templates, load a template into the Scenario Builder, and delete templates.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/scenario/SavedTemplatesPanel.tsx",
+        "frontend/src/components/scenario/ScenarioBuilder.tsx",
+        "frontend/src/hooks/useSavedTemplates.ts",
+        "frontend/src/state/useScenarioState.ts",
+        "frontend/src/utils/scenarioPersistence.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-16"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-persist-the-user-s-most-recent-in-progress-scenario-in-the-backend-and-automatically-restore-it-on-app-load-for-authenticated-users-so-their-work-is-not-lost-between-sessions",
+      "featureTitle": "Persist the user’s most recent in-progress scenario in the backend and automatically restore it on app load for authenticated users, so their work is not lost between sessions.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/hooks/useCurrentScenarioPersistence.ts",
+        "frontend/src/hooks/useDebouncedValue.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-17"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

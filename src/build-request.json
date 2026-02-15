@@ -1,0 +1,131 @@
+{
+  "kind": "build_request",
+  "title": "Remove quick presets; add Internet Identity login and persistent saved attacker/defender combos",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-13",
+      "text": "Remove the existing “Quick Presets” feature from the Scenario Builder UI (including the sidebar panel) so users can no longer add built-in attacker/defender presets.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "recent-messages-4"
+        ],
+        "quotes": [
+          "Could we remove the quick presets"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The Scenario Builder sidebar no longer renders the Quick Presets card/tabs/buttons.",
+        "No user-facing text references selecting a preset to begin.",
+        "The built-in preset lists are no longer imported/used by the UI."
+      ]
+    },
+    {
+      "id": "REQ-14",
+      "text": "Add Internet Identity authentication controls to the app UI so a user can log in and log out, and the logged-in state is clearly indicated.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "recent-messages-4"
+        ],
+        "quotes": [
+          "Also add the ability to log in so each time nothing is lost."
+        ]
+      },
+      "acceptanceCriteria": [
+        "The header (or other always-visible top-level UI area) provides a “Log in” action when anonymous and a “Log out” action when authenticated.",
+        "When authenticated, the UI shows that the user is signed in (e.g., by showing their principal in a short/truncated form).",
+        "Logging in uses the existing Internet Identity provider already wired into the app (no third-party auth providers).",
+        "Logging out clears the identity and the UI updates accordingly."
+      ]
+    },
+    {
+      "id": "REQ-15",
+      "text": "Implement backend persistence for user-owned saved templates that capture “combos of attacks and types of defenders” by storing the full current scenario (attackers, defenders, and priority) under the authenticated user.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "recent-messages-4"
+        ],
+        "quotes": [
+          "add the ability to save combos of attacks and types of defenders",
+          "add the ability to log in so each time nothing is lost."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Backend exposes authenticated CRUD methods to create/save a named scenario template, list templates for the caller, load a template by id, and delete a template by id.",
+        "Templates are isolated per authenticated principal (a user can only access their own templates).",
+        "Unauthenticated (anonymous) calls to template CRUD APIs return an error (or a clear empty/denied response) rather than writing shared state.",
+        "Backend state survives canister upgrades using stable storage patterns appropriate for a single-actor Motoko canister."
+      ]
+    },
+    {
+      "id": "REQ-16",
+      "text": "Add a “Saved Templates” UI (replacing presets) that lets a logged-in user save the current scenario as a named template, browse their saved templates, load a template into the Scenario Builder, and delete templates.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "recent-messages-4"
+        ],
+        "quotes": [
+          "add the ability to save combos of attacks and types of defenders"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The Scenario Builder sidebar contains a new panel for saved templates (and does not contain the removed presets panel).",
+        "When not logged in, the saved-templates panel indicates login is required and disables save/load actions.",
+        "When logged in, a user can enter a template name and save the current scenario; the new template appears in the list without a full page reload.",
+        "A user can click a template to load it; the Scenario Builder updates to match the template’s attackers/defenders/priority.",
+        "A user can delete a template; it disappears from the list and is removed in the backend.",
+        "Frontend uses the existing actor/auth hooks to call the backend and uses React Query patterns for fetch/mutation and cache refresh."
+      ]
+    },
+    {
+      "id": "REQ-17",
+      "text": "Persist the user’s most recent in-progress scenario in the backend and automatically restore it on app load for authenticated users, so their work is not lost between sessions.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "recent-messages-4"
+        ],
+        "quotes": [
+          "so each time nothing is lost."
+        ]
+      },
+      "acceptanceCriteria": [
+        "When authenticated, changes to the scenario are saved to the backend (either explicitly via a “Save” control or automatically with a reasonable debounce) as the user’s last scenario.",
+        "On app startup (authenticated), the app loads the saved last scenario (if present) and populates the Scenario Builder.",
+        "If no saved last scenario exists for the user, the app behaves as it does today (empty/new scenario).",
+        "Anonymous users are not written to shared backend state."
+      ]
+    }
+  ],
+  "constraints": [
+    "Backend must remain a single Motoko actor with all logic in backend/main.mo (only add backend/migration.mo if state upgrade requires it).",
+    "Do not edit frontend immutable paths: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, and anything under frontend/src/components/ui; compose around them instead.",
+    "Use English for all user-facing text."
+  ],
+  "nonGoals": [
+    "Do not implement third-party authentication providers (only Internet Identity).",
+    "Do not add external databases or off-chain storage; persistence must be in-canister.",
+    "Do not add real-time collaboration or syncing across multiple clients beyond normal load/save behavior.",
+    "Do not change the combat math/engine behavior as part of this work."
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  },
+  "userProfileUpdate": {
+    "goalsToAdd": [
+      "Allow users to authenticate and persist saved attacker/defender scenario templates and their last scenario across sessions."
+    ],
+    "goalsToRemove": [],
+    "preferencesToAdd": [],
+    "preferencesToRemove": [],
+    "miscToAdd": [],
+    "miscToRemove": [],
+    "fieldsToSet": {},
+    "fieldsToDelete": []
+  }
+}

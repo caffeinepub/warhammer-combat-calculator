@@ -1,0 +1,64 @@
+{
+  "kind": "spec_vs_diff_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-15T21:23:33.747Z",
+  "summary": "Auth controls, saved-templates UI, and current-scenario autosave/restore were added. Backend gained per-principal template storage APIs and current-scenario persistence with authorization checks. However, the diff does not clearly remove/stop using the existing Quick Presets feature, and stable upgrade persistence for the new backend state is not evidenced. Some extra backend/utility features appear beyond the request.",
+  "missing_requirements": [
+    {
+      "id": "REQ-13",
+      "requirement": "Remove the existing “Quick Presets” feature from the Scenario Builder UI (including the sidebar panel) so users can no longer add built-in attacker/defender presets; built-in preset lists are no longer imported/used.",
+      "reason": "Although ScenarioBuilder now imports/uses SavedTemplatesPanel, the Quick Presets implementation artifacts still appear to exist and are still summarized as part of the project, so the diff does not demonstrate that presets are fully removed from the UI and no longer imported/used.",
+      "evidence": [
+        "frontend/src/components/scenario/PresetsPanel.tsx (modified, still present)",
+        "frontend/src/presets/builtInPresets.ts (still present)",
+        "frontend-file-summaries.txt (still describes presets panel and built-in presets)"
+      ]
+    },
+    {
+      "id": "REQ-15",
+      "requirement": "Backend state survives canister upgrades using stable storage patterns appropriate for a single-actor Motoko canister.",
+      "reason": "A migration module was added and backend/main.mo references it, but the diff summary does not show any stable variables/serialization (e.g., stable var, preupgrade/postupgrade) for the new maps and counters. The added state (userTemplates, userCurrentScenarios, nextTemplateId) is shown as in-memory bindings, so upgrade persistence is not evidenced.",
+      "evidence": [
+        "backend/main.mo (defines userTemplates/userCurrentScenarios as non-stable bindings; no stable storage shown in truncated view)",
+        "backend/migration.mo (initializes empty maps; does not show saving/restoring previous stable state)"
+      ]
+    }
+  ],
+  "hallucinated_features": [
+    {
+      "description": "Additional backend APIs for template names listing and template duplication.",
+      "reason": "Not requested by any requirement/AC; REQ-15 only calls for create/save, list, load-by-id, and delete-by-id.",
+      "evidence": [
+        "backend/main.mo (adds getTemplateNames and duplicateTemplate; truncated but clearly present)"
+      ]
+    },
+    {
+      "description": "New URL/sessionStorage parameter utilities and secret parameter retrieval plumbing beyond the saved-templates/auth scope.",
+      "reason": "BuildRequest does not ask for URL parameter/session storage utilities changes; appears unrelated to removing presets + II login + template persistence.",
+      "evidence": [
+        "frontend/src/utils/urlParams.ts (added/modified with sessionStorage + URL parsing utilities; truncated)",
+        "frontend/src/hooks/useActor.ts (uses getSecretParameter from urlParams)"
+      ]
+    }
+  ],
+  "confidence": 0.62,
+  "changed_files": [
+    "backend/main.mo",
+    "backend/migration.mo",
+    "frontend-file-summaries.txt",
+    "frontend/src/App.tsx",
+    "frontend/src/components/auth/AuthControls.tsx",
+    "frontend/src/components/scenario/PresetsPanel.tsx",
+    "frontend/src/components/scenario/SavedTemplatesPanel.tsx",
+    "frontend/src/components/scenario/ScenarioBuilder.tsx",
+    "frontend/src/hooks/useActor.ts",
+    "frontend/src/hooks/useCurrentScenarioPersistence.ts",
+    "frontend/src/hooks/useDebouncedValue.ts",
+    "frontend/src/hooks/useSavedTemplates.ts",
+    "frontend/src/presets/builtInPresets.ts",
+    "frontend/src/state/useScenarioState.ts",
+    "frontend/src/utils/scenarioPersistence.ts",
+    "frontend/src/utils/urlParams.ts",
+    "project_state.json"
+  ]
+}

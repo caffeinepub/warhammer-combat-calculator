@@ -1,0 +1,119 @@
+{
+  "kind": "coverage_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-15T21:23:33.753Z",
+  "sources": {
+    "buildRequest": true,
+    "implementationPlan": true
+  },
+  "requirements": {
+    "total": 5,
+    "implemented": 4,
+    "items": [
+      {
+        "id": "REQ-13",
+        "summary": "Remove the existing “Quick Presets” feature from the Scenario Builder UI (including the sidebar panel) so users can no longer add built-in attacker/defender presets.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/scenario/ScenarioBuilder.tsx",
+          "frontend/src/components/scenario/PresetsPanel.tsx",
+          "frontend/src/presets/builtInPresets.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/scenario/ScenarioBuilder.tsx",
+          "frontend/src/components/scenario/PresetsPanel.tsx",
+          "frontend/src/presets/builtInPresets.ts"
+        ]
+      },
+      {
+        "id": "REQ-14",
+        "summary": "Add Internet Identity authentication controls to the app UI so a user can log in and log out, and the logged-in state is clearly indicated.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/auth/AuthControls.tsx",
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/auth/AuthControls.tsx",
+          "frontend/src/App.tsx"
+        ]
+      },
+      {
+        "id": "REQ-15",
+        "summary": "Implement backend persistence for user-owned saved templates that capture “combos of attacks and types of defenders” by storing the full current scenario (attackers, defenders, and priority) under the authenticated user.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-16",
+        "summary": "Add a “Saved Templates” UI (replacing presets) that lets a logged-in user save the current scenario as a named template, browse their saved templates, load a template into the Scenario Builder, and delete templates.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/utils/scenarioPersistence.ts",
+          "frontend/src/hooks/useSavedTemplates.ts",
+          "frontend/src/components/scenario/SavedTemplatesPanel.tsx",
+          "frontend/src/components/scenario/ScenarioBuilder.tsx",
+          "frontend/src/App.tsx",
+          "frontend/src/state/useScenarioState.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/utils/scenarioPersistence.ts",
+          "frontend/src/hooks/useSavedTemplates.ts",
+          "frontend/src/components/scenario/SavedTemplatesPanel.tsx",
+          "frontend/src/components/scenario/ScenarioBuilder.tsx",
+          "frontend/src/App.tsx",
+          "frontend/src/state/useScenarioState.ts"
+        ]
+      },
+      {
+        "id": "REQ-17",
+        "summary": "Persist the user’s most recent in-progress scenario in the backend and automatically restore it on app load for authenticated users, so their work is not lost between sessions.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/hooks/useCurrentScenarioPersistence.ts",
+          "frontend/src/hooks/useDebouncedValue.ts",
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/hooks/useCurrentScenarioPersistence.ts",
+          "frontend/src/hooks/useDebouncedValue.ts",
+          "frontend/src/App.tsx"
+        ]
+      }
+    ]
+  },
+  "changedFiles": [
+    "backend/authorization/MixinAuthorization.mo",
+    "backend/authorization/access-control.mo",
+    "backend/main.mo",
+    "backend/migration.mo",
+    "build-request.json",
+    "build-template/README.md",
+    "caffeine.lock.json",
+    "feature_evidence.json",
+    "frontend-file-summaries.txt",
+    "frontend-implementation-plan.json",
+    "frontend/src/App.tsx",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
+    "frontend/src/components/auth/AuthControls.tsx",
+    "frontend/src/components/scenario/PresetsPanel.tsx",
+    "frontend/src/components/scenario/SavedTemplatesPanel.tsx",
+    "frontend/src/components/scenario/ScenarioBuilder.tsx",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
+    "frontend/src/hooks/useActor.ts",
+    "frontend/src/hooks/useCurrentScenarioPersistence.ts",
+    "frontend/src/hooks/useDebouncedValue.ts",
+    "frontend/src/hooks/useSavedTemplates.ts",
+    "frontend/src/presets/builtInPresets.ts",
+    "frontend/src/state/useScenarioState.ts",
+    "frontend/src/utils/scenarioPersistence.ts",
+    "frontend/src/utils/urlParams.ts",
+    "project_state.json",
+    "scratch/component-selection.json",
+    "spec.md",
+    "spec_vs_diff_report.json"
+  ]
+}
