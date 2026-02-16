@@ -42,6 +42,8 @@ export interface DefenderModel {
   feelNoPain?: number; // 5, 6, etc.
   wounds: number;
   special_rules?: DefenderSpecialRules;
+  damageReduction?: number; // flat modifier applied after saves, before FNP (e.g., -1)
+  damageHalve?: boolean; // halve damage after saves, before FNP
 }
 
 export type PriorityMode = 'focus_fire' | 'spread' | 'weakest_first';

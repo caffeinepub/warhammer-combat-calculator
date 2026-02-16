@@ -1,131 +1,95 @@
 {
   "kind": "build_request",
-  "title": "Remove quick presets; add Internet Identity login and persistent saved attacker/defender combos",
+  "title": "Add defender damage modification step (flat reduction and half damage) after saves and before Feel No Pain",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-13",
-      "text": "Remove the existing “Quick Presets” feature from the Scenario Builder UI (including the sidebar panel) so users can no longer add built-in attacker/defender presets.",
+      "id": "REQ-18",
+      "text": "Extend the DefenderModel TypeScript data model to support defender-side damage modification that applies after failed saves (including invulnerable saves) and before Feel No Pain. Add two optional fields: (1) a flat per-unsaved-wound damage modifier (e.g., -1) and (2) a boolean to halve damage (minimum 1). Ensure these fields round-trip through scenario serialization/deserialization and are available everywhere DefenderModel is used.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "recent-messages-4"
+          "msg-1"
         ],
         "quotes": [
-          "Could we remove the quick presets"
+          "We need to add the ability for the defender to have damage modifier too... can modify the damage by -1... half damage... Damage modification comes after saving rolls, both standard and invulnerable"
         ]
       },
       "acceptanceCriteria": [
-        "The Scenario Builder sidebar no longer renders the Quick Presets card/tabs/buttons.",
-        "No user-facing text references selecting a preset to begin.",
-        "The built-in preset lists are no longer imported/used by the UI."
+        "`frontend/src/models/combat.ts` DefenderModel includes two new optional fields for damage modification (flat modifier and halve-damage toggle).",
+        "Existing scenario persistence (JSON stringify/parse via `frontend/src/utils/scenarioPersistence.ts`) continues to work with old saved scenarios that do not have the new fields (fields remain optional).",
+        "No backend schema changes are required to store these new fields because scenarios are persisted as JSON strings and the new fields are optional."
       ]
     },
     {
-      "id": "REQ-14",
-      "text": "Add Internet Identity authentication controls to the app UI so a user can log in and log out, and the logged-in state is clearly indicated.",
+      "id": "REQ-19",
+      "text": "Update the Scenario Builder UI to let users configure defender damage modification. Add controls to `DefenderEditor` to set (a) a flat per-unsaved-wound damage modifier value (allow negative values such as -1) and (b) a toggle for half damage. Use clear English labels and brief helper text indicating this step is applied after saves and before Feel No Pain.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "recent-messages-4"
+          "msg-1"
         ],
         "quotes": [
-          "Also add the ability to log in so each time nothing is lost."
+          "We need to add the ability for the defender to have damage modifier too... can modify the damage by -1... half damage... Damage modification comes after saving rolls, both standard and invulnerable"
         ]
       },
       "acceptanceCriteria": [
-        "The header (or other always-visible top-level UI area) provides a “Log in” action when anonymous and a “Log out” action when authenticated.",
-        "When authenticated, the UI shows that the user is signed in (e.g., by showing their principal in a short/truncated form).",
-        "Logging in uses the existing Internet Identity provider already wired into the app (no third-party auth providers).",
-        "Logging out clears the identity and the UI updates accordingly."
+        "Defender editor shows a numeric input for a flat damage modifier (e.g., -1) and a switch/checkbox for “Half damage”.",
+        "Changing either control updates the in-memory scenario state and is reflected in subsequent calculations/results.",
+        "If neither control is set, behavior is identical to current behavior (no change to results)."
       ]
     },
     {
-      "id": "REQ-15",
-      "text": "Implement backend persistence for user-owned saved templates that capture “combos of attacks and types of defenders” by storing the full current scenario (attackers, defenders, and priority) under the authenticated user.",
-      "target": "backend",
+      "id": "REQ-20",
+      "text": "Update the deterministic expected-damage engine to apply defender damage modification after the save step and before Feel No Pain. For deterministic calculations, apply the modifier to the weapon’s average damage per unsaved wound in this order: (1) apply flat modifier and clamp to minimum 1, (2) if halve-damage is enabled, halve and clamp to minimum 1, then (3) apply Feel No Pain mitigation. Ensure this affects all deterministic outputs that depend on expected damage (totals, per-defender aggregation, tables, and chance-to-kill).",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "recent-messages-4"
+          "msg-1"
         ],
         "quotes": [
-          "add the ability to save combos of attacks and types of defenders",
-          "add the ability to log in so each time nothing is lost."
+          "Damage modification comes after saving rolls, both standard and invulnerable"
         ]
       },
       "acceptanceCriteria": [
-        "Backend exposes authenticated CRUD methods to create/save a named scenario template, list templates for the caller, load a template by id, and delete a template by id.",
-        "Templates are isolated per authenticated principal (a user can only access their own templates).",
-        "Unauthenticated (anonymous) calls to template CRUD APIs return an error (or a clear empty/denied response) rather than writing shared state.",
-        "Backend state survives canister upgrades using stable storage patterns appropriate for a single-actor Motoko canister."
+        "`calculateExpectedDamage` applies damage modification strictly between the save step and Feel No Pain step.",
+        "Flat modifier uses a minimum damage floor of 1 after applying the modifier.",
+        "Half-damage uses a minimum damage floor of 1 after halving.",
+        "Deterministic results (Summary totals, Breakdown table, Damage chart, and Chance-to-kill) change appropriately when the new defender fields are set."
       ]
     },
     {
-      "id": "REQ-16",
-      "text": "Add a “Saved Templates” UI (replacing presets) that lets a logged-in user save the current scenario as a named template, browse their saved templates, load a template into the Scenario Builder, and delete templates.",
-      "target": "both",
+      "id": "REQ-21",
+      "text": "Update the Monte Carlo simulation engine to apply defender damage modification after saves and before Feel No Pain on a per-unsaved-wound basis. For each unsaved wound: roll weapon damage, apply flat modifier with minimum 1, apply half-damage with minimum 1, then apply Feel No Pain rolls against the resulting damage.",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "recent-messages-4"
+          "msg-1"
         ],
         "quotes": [
-          "add the ability to save combos of attacks and types of defenders"
+          "Damage modification comes after saving rolls, both standard and invulnerable"
         ]
       },
       "acceptanceCriteria": [
-        "The Scenario Builder sidebar contains a new panel for saved templates (and does not contain the removed presets panel).",
-        "When not logged in, the saved-templates panel indicates login is required and disables save/load actions.",
-        "When logged in, a user can enter a template name and save the current scenario; the new template appears in the list without a full page reload.",
-        "A user can click a template to load it; the Scenario Builder updates to match the template’s attackers/defenders/priority.",
-        "A user can delete a template; it disappears from the list and is removed in the backend.",
-        "Frontend uses the existing actor/auth hooks to call the backend and uses React Query patterns for fetch/mutation and cache refresh."
-      ]
-    },
-    {
-      "id": "REQ-17",
-      "text": "Persist the user’s most recent in-progress scenario in the backend and automatically restore it on app load for authenticated users, so their work is not lost between sessions.",
-      "target": "both",
-      "source": {
-        "messageIds": [
-          "recent-messages-4"
-        ],
-        "quotes": [
-          "so each time nothing is lost."
-        ]
-      },
-      "acceptanceCriteria": [
-        "When authenticated, changes to the scenario are saved to the backend (either explicitly via a “Save” control or automatically with a reasonable debounce) as the user’s last scenario.",
-        "On app startup (authenticated), the app loads the saved last scenario (if present) and populates the Scenario Builder.",
-        "If no saved last scenario exists for the user, the app behaves as it does today (empty/new scenario).",
-        "Anonymous users are not written to shared backend state."
+        "Simulation results differ when defender damage modifier fields are enabled, consistent with the “after save, before Feel No Pain” timing.",
+        "Flat reduction never reduces a wound’s damage below 1 in simulation.",
+        "Half-damage never reduces a wound’s damage below 1 in simulation.",
+        "When both flat reduction and half-damage are enabled, they apply in the documented order before Feel No Pain."
       ]
     }
   ],
   "constraints": [
-    "Backend must remain a single Motoko actor with all logic in backend/main.mo (only add backend/migration.mo if state upgrade requires it).",
-    "Do not edit frontend immutable paths: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, and anything under frontend/src/components/ui; compose around them instead.",
-    "Use English for all user-facing text."
+    "Backend must remain a single Motoko actor (no additional backend services).",
+    "Do not modify files under `frontend/src/components/ui` or other frontend immutable paths listed in SYSTEM_CONTEXT.",
+    "Use English for all user-facing UI labels and helper text."
   ],
   "nonGoals": [
-    "Do not implement third-party authentication providers (only Internet Identity).",
-    "Do not add external databases or off-chain storage; persistence must be in-canister.",
-    "Do not add real-time collaboration or syncing across multiple clients beyond normal load/save behavior.",
-    "Do not change the combat math/engine behavior as part of this work."
+    "Do not add new authentication mechanisms beyond existing Internet Identity.",
+    "Do not implement additional Warhammer special rules beyond the requested defender damage modification step.",
+    "Do not change target priority logic or sequential wound allocation behavior as part of this change."
   ],
   "imageRequirements": {
     "required": [],
     "edits": []
-  },
-  "userProfileUpdate": {
-    "goalsToAdd": [
-      "Allow users to authenticate and persist saved attacker/defender scenario templates and their last scenario across sessions."
-    ],
-    "goalsToRemove": [],
-    "preferencesToAdd": [],
-    "preferencesToRemove": [],
-    "miscToAdd": [],
-    "miscToRemove": [],
-    "fieldsToSet": {},
-    "fieldsToDelete": []
   }
 }

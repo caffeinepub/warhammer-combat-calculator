@@ -93,13 +93,26 @@ function simulateWeaponVsDefender(
     }
   }
   
-  // Phase 4: Damage
+  // Phase 4: Damage per unsaved wound
   let totalDamage = 0;
   for (let i = 0; i < unsavedWounds; i++) {
-    totalDamage += rollDice(weapon.damage);
+    let woundDamage = rollDice(weapon.damage);
+    
+    // Phase 4a: Apply defender damage modification (after saves, before FNP)
+    // First apply flat reduction
+    if (defender.damageReduction !== undefined) {
+      woundDamage = Math.max(1, woundDamage + defender.damageReduction);
+    }
+    
+    // Then apply half damage
+    if (defender.damageHalve) {
+      woundDamage = Math.max(1, Math.floor(woundDamage / 2));
+    }
+    
+    totalDamage += woundDamage;
   }
   
-  // Phase 5: Feel No Pain
+  // Phase 5: Feel No Pain (applied per point of damage)
   if (defender.feelNoPain) {
     let finalDamage = 0;
     for (let i = 0; i < totalDamage; i++) {

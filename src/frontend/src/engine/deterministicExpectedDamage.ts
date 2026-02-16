@@ -63,8 +63,20 @@ export function calculateExpectedDamage(
     expectedUnsavedWounds = critWounds + (nonCritWounds * failSaveProb);
   }
   
-  // Phase 4: Damage
-  const avgDamage = calculateAverageDamage(weapon.damage);
+  // Phase 4: Damage (base weapon damage)
+  let avgDamage = calculateAverageDamage(weapon.damage);
+  
+  // Phase 4a: Apply defender damage modification (after saves, before FNP)
+  // First apply flat reduction
+  if (defender.damageReduction !== undefined) {
+    avgDamage = Math.max(1, avgDamage + defender.damageReduction);
+  }
+  
+  // Then apply half damage
+  if (defender.damageHalve) {
+    avgDamage = Math.max(1, avgDamage / 2);
+  }
+  
   let expectedDamageTotal = expectedUnsavedWounds * avgDamage;
   
   // Phase 5: Feel No Pain

@@ -2,12 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-remove-the-existing-quick-presets-feature-from-the-scenario-builder-ui-including-the-sidebar-panel-so-users-can-no-longer-add-built-in-attacker-defender-presets",
-      "featureTitle": "Remove the existing “Quick Presets” feature from the Scenario Builder UI (including the sidebar panel) so users can no longer add built-in attacker/defender presets.",
+      "featureId": "feature-extend-the-defendermodel-typescript-data-model-to-support-defender-side-damage-modification-that-applies-after-failed-saves-including-invulnerable-saves-and-before-feel-no-pain-add-two-optional-fields-1-a-flat-per-unsaved-wound-damage-modifier-e-g-1-and-2-a-boolean-to-halve-damage-minimum-1-ensure-these-fields-round-trip-through-scenario-serialization-deserialization-and-are-available-everywhere-defendermodel-is-used",
+      "featureTitle": "Extend the DefenderModel TypeScript data model to support defender-side damage modification that applies after failed saves (including invulnerable saves) and before Feel No Pain. Add two optional fields: (1) a flat per-unsaved-wound damage modifier (e.g., -1) and (2) a boolean to halve damage (minimum 1). Ensure these fields round-trip through scenario serialization/deserialization and are available everywhere DefenderModel is used.",
       "files": [
-        "frontend/src/components/scenario/PresetsPanel.tsx",
-        "frontend/src/components/scenario/ScenarioBuilder.tsx",
-        "frontend/src/presets/builtInPresets.ts"
+        "frontend/src/models/combat.ts"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -18,16 +16,15 @@
         "authorization@4.0.0"
       ],
       "testIds": [
-        "REQ-13"
+        "REQ-18"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-add-internet-identity-authentication-controls-to-the-app-ui-so-a-user-can-log-in-and-log-out-and-the-logged-in-state-is-clearly-indicated",
-      "featureTitle": "Add Internet Identity authentication controls to the app UI so a user can log in and log out, and the logged-in state is clearly indicated.",
+      "featureId": "feature-update-the-scenario-builder-ui-to-let-users-configure-defender-damage-modification-add-controls-to-defendereditor-to-set-a-a-flat-per-unsaved-wound-damage-modifier-value-allow-negative-values-such-as-1-and-b-a-toggle-for-half-damage-use-clear-english-labels-and-brief-helper-text-indicating-this-step-is-applied-after-saves-and-before-feel-no-pain",
+      "featureTitle": "Update the Scenario Builder UI to let users configure defender damage modification. Add controls to `DefenderEditor` to set (a) a flat per-unsaved-wound damage modifier value (allow negative values such as -1) and (b) a toggle for half damage. Use clear English labels and brief helper text indicating this step is applied after saves and before Feel No Pain.",
       "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/components/auth/AuthControls.tsx"
+        "frontend/src/components/scenario/DefenderEditor.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -38,20 +35,15 @@
         "authorization@4.0.0"
       ],
       "testIds": [
-        "REQ-14"
+        "REQ-19"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-add-a-saved-templates-ui-replacing-presets-that-lets-a-logged-in-user-save-the-current-scenario-as-a-named-template-browse-their-saved-templates-load-a-template-into-the-scenario-builder-and-delete-templates",
-      "featureTitle": "Add a “Saved Templates” UI (replacing presets) that lets a logged-in user save the current scenario as a named template, browse their saved templates, load a template into the Scenario Builder, and delete templates.",
+      "featureId": "feature-update-the-deterministic-expected-damage-engine-to-apply-defender-damage-modification-after-the-save-step-and-before-feel-no-pain-for-deterministic-calculations-apply-the-modifier-to-the-weapon-s-average-damage-per-unsaved-wound-in-this-order-1-apply-flat-modifier-and-clamp-to-minimum-1-2-if-halve-damage-is-enabled-halve-and-clamp-to-minimum-1-then-3-apply-feel-no-pain-mitigation-ensure-this-affects-all-deterministic-outputs-that-depend-on-expected-damage-totals-per-defender-aggregation-tables-and-chance-to-kill",
+      "featureTitle": "Update the deterministic expected-damage engine to apply defender damage modification after the save step and before Feel No Pain. For deterministic calculations, apply the modifier to the weapon’s average damage per unsaved wound in this order: (1) apply flat modifier and clamp to minimum 1, (2) if halve-damage is enabled, halve and clamp to minimum 1, then (3) apply Feel No Pain mitigation. Ensure this affects all deterministic outputs that depend on expected damage (totals, per-defender aggregation, tables, and chance-to-kill).",
       "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/components/scenario/SavedTemplatesPanel.tsx",
-        "frontend/src/components/scenario/ScenarioBuilder.tsx",
-        "frontend/src/hooks/useSavedTemplates.ts",
-        "frontend/src/state/useScenarioState.ts",
-        "frontend/src/utils/scenarioPersistence.ts"
+        "frontend/src/engine/deterministicExpectedDamage.ts"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -62,17 +54,15 @@
         "authorization@4.0.0"
       ],
       "testIds": [
-        "REQ-16"
+        "REQ-20"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-persist-the-user-s-most-recent-in-progress-scenario-in-the-backend-and-automatically-restore-it-on-app-load-for-authenticated-users-so-their-work-is-not-lost-between-sessions",
-      "featureTitle": "Persist the user’s most recent in-progress scenario in the backend and automatically restore it on app load for authenticated users, so their work is not lost between sessions.",
+      "featureId": "feature-update-the-monte-carlo-simulation-engine-to-apply-defender-damage-modification-after-saves-and-before-feel-no-pain-on-a-per-unsaved-wound-basis-for-each-unsaved-wound-roll-weapon-damage-apply-flat-modifier-with-minimum-1-apply-half-damage-with-minimum-1-then-apply-feel-no-pain-rolls-against-the-resulting-damage",
+      "featureTitle": "Update the Monte Carlo simulation engine to apply defender damage modification after saves and before Feel No Pain on a per-unsaved-wound basis. For each unsaved wound: roll weapon damage, apply flat modifier with minimum 1, apply half-damage with minimum 1, then apply Feel No Pain rolls against the resulting damage.",
       "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/hooks/useCurrentScenarioPersistence.ts",
-        "frontend/src/hooks/useDebouncedValue.ts"
+        "frontend/src/engine/simulation.ts"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -83,7 +73,7 @@
         "authorization@4.0.0"
       ],
       "testIds": [
-        "REQ-17"
+        "REQ-21"
       ],
       "confidence": "high"
     }

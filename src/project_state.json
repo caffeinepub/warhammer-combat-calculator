@@ -1,13 +1,14 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 5,
+  "projectStateVersion": 7,
   "summary": "Web-based Warhammer 40k/AoS combat calculator with a React+TypeScript UI for building scenarios and viewing detailed results (including optional Monte Carlo simulation), now shifting away from built-in quick presets toward user login + persistent saving of reusable attacker/defender combo templates.",
   "architectural_notes": [
     "Frontend: React + TypeScript; state management via Zustand or Redux; forms via React Hook Form + Zod; charts via Recharts or Chart.js; styling via Tailwind CSS.",
     "Core domain models: Weapon, AttackerUnit, DefenderModel, CombatScenario; combat engine separates hit/wound/save/damage phases from UI.",
     "Planned dual approach: closed-form expected value calculations plus optional Monte Carlo simulation for complex scenarios.",
     "Shift away from built-in quick presets; prioritize user-defined saved templates/combos for attackers/defenders.",
-    "Add authentication + persistent storage layer (e.g., user accounts and backend/hosted DB) to retain scenarios/templates across sessions."
+    "Add authentication + persistent storage layer (e.g., user accounts and backend/hosted DB) to retain scenarios/templates across sessions.",
+    "Combat engine: add defender damage modification phase after failed saves (normal/invuln) and before Feel No Pain; support flat damage reduction (min 1) and halve-damage (min 1) effects."
   ],
   "known_issues": [],
   "isFixRequest": false,
@@ -139,6 +140,38 @@
         "REQ-17"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-extend-the-defendermodel-typescript-data-model-to-support-defender-side-damage-modification-that-applies-after-failed-saves-including-invulnerable-saves-and-before-feel-no-pain-add-two-optional-fields-1-a-flat-per-unsaved-wound-damage-modifier-e-g-1-and-2-a-boolean-to-halve-damage-minimum-1-ensure-these-fields-round-trip-through-scenario-serialization-deserialization-and-are-available-everywhere-defendermodel-is-used",
+      "title": "Extend the DefenderModel TypeScript data model to support defender-side damage modification that applies after failed saves (including invulnerable saves) and before Feel No Pain. Add two optional fields: (1) a flat per-unsaved-wound damage modifier (e.g., -1) and (2) a boolean to halve damage (minimum 1). Ensure these fields round-trip through scenario serialization/deserialization and are available everywhere DefenderModel is used.",
+      "reqIds": [
+        "REQ-18"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-scenario-builder-ui-to-let-users-configure-defender-damage-modification-add-controls-to-defendereditor-to-set-a-a-flat-per-unsaved-wound-damage-modifier-value-allow-negative-values-such-as-1-and-b-a-toggle-for-half-damage-use-clear-english-labels-and-brief-helper-text-indicating-this-step-is-applied-after-saves-and-before-feel-no-pain",
+      "title": "Update the Scenario Builder UI to let users configure defender damage modification. Add controls to `DefenderEditor` to set (a) a flat per-unsaved-wound damage modifier value (allow negative values such as -1) and (b) a toggle for half damage. Use clear English labels and brief helper text indicating this step is applied after saves and before Feel No Pain.",
+      "reqIds": [
+        "REQ-19"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-deterministic-expected-damage-engine-to-apply-defender-damage-modification-after-the-save-step-and-before-feel-no-pain-for-deterministic-calculations-apply-the-modifier-to-the-weapon-s-average-damage-per-unsaved-wound-in-this-order-1-apply-flat-modifier-and-clamp-to-minimum-1-2-if-halve-damage-is-enabled-halve-and-clamp-to-minimum-1-then-3-apply-feel-no-pain-mitigation-ensure-this-affects-all-deterministic-outputs-that-depend-on-expected-damage-totals-per-defender-aggregation-tables-and-chance-to-kill",
+      "title": "Update the deterministic expected-damage engine to apply defender damage modification after the save step and before Feel No Pain. For deterministic calculations, apply the modifier to the weapon’s average damage per unsaved wound in this order: (1) apply flat modifier and clamp to minimum 1, (2) if halve-damage is enabled, halve and clamp to minimum 1, then (3) apply Feel No Pain mitigation. Ensure this affects all deterministic outputs that depend on expected damage (totals, per-defender aggregation, tables, and chance-to-kill).",
+      "reqIds": [
+        "REQ-20"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-monte-carlo-simulation-engine-to-apply-defender-damage-modification-after-saves-and-before-feel-no-pain-on-a-per-unsaved-wound-basis-for-each-unsaved-wound-roll-weapon-damage-apply-flat-modifier-with-minimum-1-apply-half-damage-with-minimum-1-then-apply-feel-no-pain-rolls-against-the-resulting-damage",
+      "title": "Update the Monte Carlo simulation engine to apply defender damage modification after saves and before Feel No Pain on a per-unsaved-wound basis. For each unsaved wound: roll weapon damage, apply flat modifier with minimum 1, apply half-damage with minimum 1, then apply Feel No Pain rolls against the resulting damage.",
+      "reqIds": [
+        "REQ-21"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -203,6 +236,12 @@
         "REQ-15"
       ],
       "status": "pending"
+    },
+    {
+      "id": "AR-13",
+      "summary": "Add defender damage modification step after saves and before Feel No Pain (e.g., flat -1 damage and/or halve damage with minimum 1), including UI fields and engine support",
+      "reqIds": [],
+      "status": "in_progress"
     }
   ],
   "gameProjectType": "none",

@@ -1,116 +1,72 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-15T21:23:33.753Z",
+  "generatedAt": "2026-02-16T06:45:58.607Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 5,
+    "total": 4,
     "implemented": 4,
     "items": [
       {
-        "id": "REQ-13",
-        "summary": "Remove the existing “Quick Presets” feature from the Scenario Builder UI (including the sidebar panel) so users can no longer add built-in attacker/defender presets.",
+        "id": "REQ-18",
+        "summary": "Extend the DefenderModel TypeScript data model to support defender-side damage modification that applies after failed saves (including invulnerable saves) and before Feel No Pain. Add two optional fields: (1) a flat per-unsaved-wound damage modifier (e.g., -1) and (2) a boolean to halve damage (minimum 1). Ensure these fields round-trip through scenario serialization/deserialization and are available everywhere DefenderModel is used.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/scenario/ScenarioBuilder.tsx",
-          "frontend/src/components/scenario/PresetsPanel.tsx",
-          "frontend/src/presets/builtInPresets.ts"
+          "frontend/src/models/combat.ts",
+          "frontend/src/utils/scenarioPersistence.ts"
         ],
         "matchedFiles": [
-          "frontend/src/components/scenario/ScenarioBuilder.tsx",
-          "frontend/src/components/scenario/PresetsPanel.tsx",
-          "frontend/src/presets/builtInPresets.ts"
+          "frontend/src/models/combat.ts"
         ]
       },
       {
-        "id": "REQ-14",
-        "summary": "Add Internet Identity authentication controls to the app UI so a user can log in and log out, and the logged-in state is clearly indicated.",
+        "id": "REQ-19",
+        "summary": "Update the Scenario Builder UI to let users configure defender damage modification. Add controls to `DefenderEditor` to set (a) a flat per-unsaved-wound damage modifier value (allow negative values such as -1) and (b) a toggle for half damage. Use clear English labels and brief helper text indicating this step is applied after saves and before Feel No Pain.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/auth/AuthControls.tsx",
-          "frontend/src/App.tsx"
+          "frontend/src/components/scenario/DefenderEditor.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/components/auth/AuthControls.tsx",
-          "frontend/src/App.tsx"
+          "frontend/src/components/scenario/DefenderEditor.tsx"
         ]
       },
       {
-        "id": "REQ-15",
-        "summary": "Implement backend persistence for user-owned saved templates that capture “combos of attacks and types of defenders” by storing the full current scenario (attackers, defenders, and priority) under the authenticated user.",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-16",
-        "summary": "Add a “Saved Templates” UI (replacing presets) that lets a logged-in user save the current scenario as a named template, browse their saved templates, load a template into the Scenario Builder, and delete templates.",
+        "id": "REQ-20",
+        "summary": "Update the deterministic expected-damage engine to apply defender damage modification after the save step and before Feel No Pain. For deterministic calculations, apply the modifier to the weapon’s average damage per unsaved wound in this order: (1) apply flat modifier and clamp to minimum 1, (2) if halve-damage is enabled, halve and clamp to minimum 1, then (3) apply Feel No Pain mitigation. Ensure this affects all deterministic outputs that depend on expected damage (totals, per-defender aggregation, tables, and chance-to-kill).",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/utils/scenarioPersistence.ts",
-          "frontend/src/hooks/useSavedTemplates.ts",
-          "frontend/src/components/scenario/SavedTemplatesPanel.tsx",
-          "frontend/src/components/scenario/ScenarioBuilder.tsx",
-          "frontend/src/App.tsx",
-          "frontend/src/state/useScenarioState.ts"
+          "frontend/src/engine/deterministicExpectedDamage.ts",
+          "frontend/src/engine/resolveScenario.ts"
         ],
         "matchedFiles": [
-          "frontend/src/utils/scenarioPersistence.ts",
-          "frontend/src/hooks/useSavedTemplates.ts",
-          "frontend/src/components/scenario/SavedTemplatesPanel.tsx",
-          "frontend/src/components/scenario/ScenarioBuilder.tsx",
-          "frontend/src/App.tsx",
-          "frontend/src/state/useScenarioState.ts"
+          "frontend/src/engine/deterministicExpectedDamage.ts"
         ]
       },
       {
-        "id": "REQ-17",
-        "summary": "Persist the user’s most recent in-progress scenario in the backend and automatically restore it on app load for authenticated users, so their work is not lost between sessions.",
+        "id": "REQ-21",
+        "summary": "Update the Monte Carlo simulation engine to apply defender damage modification after saves and before Feel No Pain on a per-unsaved-wound basis. For each unsaved wound: roll weapon damage, apply flat modifier with minimum 1, apply half-damage with minimum 1, then apply Feel No Pain rolls against the resulting damage.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/hooks/useCurrentScenarioPersistence.ts",
-          "frontend/src/hooks/useDebouncedValue.ts",
-          "frontend/src/App.tsx"
+          "frontend/src/engine/simulation.ts"
         ],
         "matchedFiles": [
-          "frontend/src/hooks/useCurrentScenarioPersistence.ts",
-          "frontend/src/hooks/useDebouncedValue.ts",
-          "frontend/src/App.tsx"
+          "frontend/src/engine/simulation.ts"
         ]
       }
     ]
   },
   "changedFiles": [
-    "backend/authorization/MixinAuthorization.mo",
-    "backend/authorization/access-control.mo",
-    "backend/main.mo",
-    "backend/migration.mo",
     "build-request.json",
-    "build-template/README.md",
-    "caffeine.lock.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/App.tsx",
-    "frontend/src/backend.d.ts",
-    "frontend/src/backend.ts",
-    "frontend/src/components/auth/AuthControls.tsx",
-    "frontend/src/components/scenario/PresetsPanel.tsx",
-    "frontend/src/components/scenario/SavedTemplatesPanel.tsx",
-    "frontend/src/components/scenario/ScenarioBuilder.tsx",
-    "frontend/src/declarations/backend.did.d.ts",
-    "frontend/src/declarations/backend.did.js",
-    "frontend/src/hooks/useActor.ts",
-    "frontend/src/hooks/useCurrentScenarioPersistence.ts",
-    "frontend/src/hooks/useDebouncedValue.ts",
-    "frontend/src/hooks/useSavedTemplates.ts",
-    "frontend/src/presets/builtInPresets.ts",
-    "frontend/src/state/useScenarioState.ts",
-    "frontend/src/utils/scenarioPersistence.ts",
-    "frontend/src/utils/urlParams.ts",
+    "frontend/src/components/scenario/DefenderEditor.tsx",
+    "frontend/src/engine/deterministicExpectedDamage.ts",
+    "frontend/src/engine/simulation.ts",
+    "frontend/src/models/combat.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

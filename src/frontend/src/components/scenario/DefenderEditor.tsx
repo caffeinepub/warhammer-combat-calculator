@@ -145,6 +145,44 @@ export function DefenderEditor({ defender, onUpdate, onRemove }: DefenderEditorP
             />
           </div>
         </div>
+
+        <div className="space-y-3 pt-2 border-t border-border/50">
+          <div className="space-y-1">
+            <Label htmlFor={`defender-damage-reduction-${defender.id}`} className="text-sm font-medium">
+              Damage Reduction
+            </Label>
+            <Input
+              id={`defender-damage-reduction-${defender.id}`}
+              type="number"
+              value={defender.damageReduction ?? ''}
+              onChange={(e) => {
+                const value = e.target.value === '' ? undefined : parseInt(e.target.value);
+                onUpdate({ damageReduction: value });
+              }}
+              placeholder="e.g., -1"
+              className="w-full"
+            />
+            <p className="text-xs text-muted-foreground">
+              Flat modifier per unsaved wound (e.g., -1). Applied after saves, before Feel No Pain.
+            </p>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label htmlFor={`defender-damage-halve-${defender.id}`} className="text-sm font-medium">
+                Half Damage
+              </Label>
+              <p className="text-xs text-muted-foreground">
+                Halve damage after saves, before Feel No Pain
+              </p>
+            </div>
+            <Switch
+              id={`defender-damage-halve-${defender.id}`}
+              checked={defender.damageHalve || false}
+              onCheckedChange={(checked) => onUpdate({ damageHalve: checked })}
+            />
+          </div>
+        </div>
       </CardContent>
     </Card>
   );

@@ -1,13 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Remove built-in quick presets and add Internet Identity–backed login with persistent, user-owned saved scenario templates and last-session restore.
+**Goal:** Add a defender-side damage modification step (flat reduction and/or half damage) that applies after failed saves (including invulnerable) and before Feel No Pain, across scenario data, UI, and both deterministic and simulation calculators.
 
 **Planned changes:**
-- Remove the “Quick Presets” UI from the Scenario Builder sidebar and eliminate any remaining preset-related UI text and imports/usage.
-- Add always-visible Internet Identity authentication controls (log in/log out) and a clear signed-in indicator (e.g., truncated principal).
-- Implement authenticated backend CRUD for user-owned, named scenario templates storing the full scenario (attackers, defenders, priority), isolated per principal and persisted via stable storage across upgrades.
-- Replace presets with a “Saved Templates” sidebar panel that (when logged in) can save the current scenario, list templates, load a template into the Scenario Builder, and delete templates; when logged out, indicate login is required and disable actions.
-- Persist each authenticated user’s most recent in-progress scenario in the backend and automatically restore it on app load; do not write shared state for anonymous users.
+- Extend `DefenderModel` to include two optional defender damage modification fields: a flat per-unsaved-wound damage modifier and a half-damage toggle; ensure these fields round-trip in scenario serialization/deserialization and remain backward-compatible with older saved scenarios.
+- Update the Scenario Builder `DefenderEditor` UI to let users set a numeric flat damage modifier (including negative values such as -1) and a “Half damage” toggle, with helper text clarifying timing (after saves, before Feel No Pain).
+- Update deterministic expected-damage calculations to apply defender damage modification strictly between save resolution and Feel No Pain, in order: flat modifier (min 1), then halve (min 1), then Feel No Pain.
+- Update Monte Carlo simulation to apply the same damage modification timing and order per unsaved wound: roll damage, apply flat modifier (min 1), apply halve (min 1), then Feel No Pain.
 
-**User-visible outcome:** Users can log in with Internet Identity, save and manage their own attacker/defender scenario templates, and have their last in-progress scenario automatically restored across sessions; quick presets are no longer available.
+**User-visible outcome:** Users can configure defender damage reduction (flat reduction and/or half damage) in the scenario builder, and both deterministic and simulated results update to reflect this step after saves and before Feel No Pain.
